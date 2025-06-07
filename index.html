@@ -468,7 +468,9 @@
             if (savedData) {
                 workouts = JSON.parse(savedData).map(w => ({
                     ...w,
-                    date: new Date(w.date) // Convert date string back to Date object
+                    // Garante que avgHeartRate seja um número
+                    avgHeartRate: Number(w.avgHeartRate) || 0,
+                    date: new Date(w.date)
                 }));
                 updateUI();
             }
@@ -623,9 +625,11 @@
             const totalCalories = workouts.reduce((sum, w) => sum + w.calories, 0);
             totalCaloriesEl.textContent = totalCalories;
             
+            // Cálculo corrigido da FC Média
             const avgHeartRate = workouts.length > 0 
                 ? Math.round(workouts.reduce((sum, w) => sum + w.avgHeartRate, 0) / workouts.length)
-                : 0;
+                : 0; // Valor padrão quando não há treinos
+            
             avgHeartRateEl.textContent = avgHeartRate;
         }
 
