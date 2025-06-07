@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Workout Performance Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #4ecdc4;
+        }
+
+        .stat-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #bbb;
+            font-size: 0.9rem;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .chart-container h3 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #4ecdc4;
+        }
+
+        .add-workout {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 40px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            color: #bbb;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input::placeholder {
+            color: #888;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ff5252;
+        }
+
+        .workout-list {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .workout-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #4ecdc4;
+            transition: transform 0.2s ease;
+        }
+
+        .workout-item:hover {
+            transform: translateX(10px);
+        }
+
+        .workout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .workout-type {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+
+        .workout-date {
+            color: #bbb;
+            font-size: 0.9rem;
+        }
+
+        .workout-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .workout-stat {
+            text-align: center;
+        }
+
+        .workout-stat .value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .workout-stat .label {
+            font-size: 0.8rem;
+            color: #bbb;
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .data-actions {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-dumbbell"></i> Workout Performance Tracker v1</h1>
+            <p>Gerencie seus treinos e acompanhe seu progresso</p>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <i class="fas fa-running"></i>
+                <h3 id="totalWorkouts">0</h3>
+                <p>Total de Treinos</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-clock"></i>
+                <h3 id="totalDuration">00:00</h3>
+                <p>Tempo Total</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-fire"></i>
+                <h3 id="totalCalories">0</h3>
+                <p>Calorias Totais</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-heartbeat"></i>
+                <h3 id="avgHeartRate">0</h3>
+                <p>FC Média (BPM)</p>
+            </div>
+        </div>
+
+        <div class="data-actions">
+            <button class="btn btn-primary" onclick="toggleForm()">Adicionar Novo Treino</button>
+            <button class="btn btn-secondary" onclick="exportData()">Exportar Dados</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">Importar Dados</button>
+            <button class="btn btn-danger" onclick="clearWorkouts()">Apagar Tudo</button>
+            <input type="file" id="fileInput" accept=".json">
+        </div>
+
+        <div class="add-workout hidden" id="addWorkoutForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="workoutType">Tipo de treino</label>
+                    <input
+                        type="text"
+                        id="workoutType"
+                        placeholder="Ex: Pilates, Corrida..."
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="duration">Duração (minutos)</label>
+                    <input
+                        type="number"
+                        id="duration"
+                        placeholder="Ex: 60"
+                        min="1"
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="calories">Calorias queimadas</label>
+                    <input
+                        type="number"
+                        id="calories"
+                        placeholder="Ex: 300"
+                        min="0"
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="avgHR">FC Média (BPM)</label>
+                    <input
+                        type="number"
+                        id="avgHR"
+                        placeholder="Ex: 120"
+                        min="1"
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="maxHR">FC Máxima (BPM)</label>
+                    <input
+                        type="number"
+                        id="maxHR"
+                        placeholder="Ex: 150"
+                        min="1"
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="intensiveZone">Zona Intensiva (%)</label>
+                    <input
+                        type="number"
+                        id="intensiveZone"
+                        placeholder="Ex: 45"
+                        min="0"
+                        max="100"
+                    />
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <button class="btn btn-primary" onclick="addWorkout()">Salvar Treino</button>
+                <button class="btn btn-secondary" onclick="toggleForm()">Cancelar</button>
+            </div>
+        </div>
+
+        <div class="workout-list" id="workoutList">
+            <h2>Histórico de Treinos</h2>
+            <!-- Treinos serão inseridos aqui dinamicamente -->
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-container">
+                <h3>Desempenho da Frequência Cardíaca Média</h3>
+                <canvas id="heartRateChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estado inicial dos treinos
+        let workouts = [];
+
+        // Função para formatar tempo em minutos:segundos
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+        }
+
+        // Salva os treinos no localStorage
+        function saveWorkouts() {
+            localStorage.setItem("workoutData", JSON.stringify(workouts));
+        }
+
+        // Carrega os treinos do localStorage
+        function loadWorkouts() {
+            const savedData = localStorage.getItem("workoutData");
+            if (savedData) {
+                workouts = JSON.parse(savedData).map(w => ({
+                    ...w,
+                    date: new Date(w.date) // Converte string de data de volta para objeto Date
+                }));
+            }
+        }
+
+        // Limpa todos os dados
+        function clearWorkouts() {
+            if (confirm("Tem certeza que quer apagar todos os dados?")) {
+                localStorage.removeItem("workoutData");
+                workouts = [];
+                updateStats();
+                updateWorkoutList();
+                updateChart();
+            }
+        }
+
+        // Exporta os dados como arquivo JSON
+        function exportData() {
+            if (workouts.length === 0) {
+                alert("Nenhum dado para exportar!");
+                return;
+            }
+            
+            const dataStr = JSON.stringify(workouts, null, 2);
+            const dataBlob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `workout-data-${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Configura o listener para importação de dados
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const importedData = JSON.parse(event.target.result);
+                    workouts = importedData.map(w => ({
+                        ...w,
+                        date: new Date(w.date)
+                    }));
+                    saveWorkouts();
+                    updateStats();
+                    updateWorkoutList();
+                    updateChart();
+                    alert('Dados importados com sucesso!');
+                } catch (error) {
+                    alert('Erro ao importar dados: Arquivo inválido!');
+                }
+            };
+            reader.readAsText(file);
+            
+            // Limpa o input para permitir nova importação do mesmo arquivo
+            e.target.value = '';
+        });
+
+        // Atualiza as estatísticas gerais no topo
+        function updateStats() {
+            const totalWorkouts = workouts.length;
+            const totalDuration = workouts.reduce((acc, w) => acc + w.duration, 0);
+            const totalCalories = workouts.reduce((acc, w) => acc + w.calories, 0);
+            const avgHeartRate = workouts.length > 0
+                ? Math.round(workouts.reduce((acc, w) => acc + w.avgHR, 0) / workouts.length)
+                : 0;
+
+            document.getElementById("totalWorkouts").textContent = totalWorkouts;
+            document.getElementById("totalDuration").textContent = formatTime(totalDuration);
+            document.getElementById("totalCalories").textContent = totalCalories;
+            document.getElementById("avgHeartRate").textContent = avgHeartRate;
+        }
+
+        // Atualiza a lista de treinos
+        function updateWorkoutList() {
+            const list = document.getElementById("workoutList");
+            // Remove todos os itens exceto o título
+            while (list.children.length > 1) {
+                list.removeChild(list.lastChild);
+            }
+
+            if (workouts.length === 0) {
+                const emptyMsg = document.createElement("p");
+                emptyMsg.textContent = "Nenhum treino registrado ainda.";
+                emptyMsg.style.textAlign = "center";
+                emptyMsg.style.color = "#bbb";
+                list.appendChild(emptyMsg);
+                return;
+            }
+
+            workouts.forEach((w) => {
+                const workoutItem = document.createElement("div");
+                workoutItem.classList.add("workout-item");
+
+                const workoutHeader = document.createElement("div");
+                workoutHeader.classList.add("workout-header");
+
+                const workoutType = document.createElement("div");
+                workoutType.classList.add("workout-type");
+                workoutType.textContent = w.type;
+
+                const workoutDate = document.createElement("div");
+                workoutDate.classList.add("workout-date");
+                workoutDate.textContent = w.date.toLocaleDateString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                });
+
+                workoutHeader.appendChild(workoutType);
+                workoutHeader.appendChild(workoutDate);
+
+                const workoutStats = document.createElement("div");
+                workoutStats.classList.add("workout-stats");
+
+                const durationStat = createStat(formatTime(w.duration), "Duração");
+                const caloriesStat = createStat(w.calories, "Calorias");
+                const avgHRStat = createStat(w.avgHR, "FC Média");
+                const intensiveZoneStat = createStat(
+                    w.intensiveZone !== null ? w.intensiveZone + "%" : "-",
+                    "Zona Intensiva"
+                );
+
+                workoutStats.appendChild(durationStat);
+                workoutStats.appendChild(caloriesStat);
+                workoutStats.appendChild(avgHRStat);
+                workoutStats.appendChild(intensiveZoneStat);
+
+                workoutItem.appendChild(workoutHeader);
+                workoutItem.appendChild(workoutStats);
+
+                list.appendChild(workoutItem);
+            });
+        }
+
+        function createStat(value, label) {
+            const stat = document.createElement("div");
+            stat.classList.add("workout-stat");
+
+            const valEl = document.createElement("div");
+            valEl.classList.add("value");
+            valEl.textContent = value;
+
+            const labelEl = document.createElement("div");
+            labelEl.classList.add("label");
+            labelEl.textContent = label;
+
+            stat.appendChild(valEl);
+            stat.appendChild(labelEl);
+            return stat;
+        }
+
+        // Controle do formulário
+        function toggleForm() {
+            const form = document.getElementById("addWorkoutForm");
+            form.classList.toggle("hidden");
+            if (!form.classList.contains("hidden")) {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+            }
+        }
+
+        // Limpa os campos do formulário
+        function clearForm() {
+            document.getElementById("workoutType").value = "";
+            document.getElementById("duration").value = "";
+            document.getElementById("calories").value = "";
+            document.getElementById("avgHR").value = "";
+            document.getElementById("maxHR").value = "";
+            document.getElementById("intensiveZone").value = "";
+        }
+
+        // Adiciona novo treino
+        function addWorkout() {
+            const type = document.getElementById("workoutType").value.trim();
+            const durationMin = parseInt(document.getElementById("duration").value);
+            const calories = parseInt(document.getElementById("calories").value);
+            const avgHR = parseInt(document.getElementById("avgHR").value);
+            const maxHR = document.getElementById("maxHR").value ? parseInt(document.getElementById("maxHR").value) : null;
+            const intensiveZone = document.getElementById("intensiveZone").value
+                ? parseFloat(document.getElementById("intensiveZone").value)
+                : null;
+
+            if (!type) {
+                alert("Por favor, informe o tipo de treino.");
+                return;
+            }
+            if (isNaN(durationMin) || durationMin <= 0) {
+                alert("Por favor, informe uma duração válida.");
+                return;
+            }
+            if (isNaN(calories) || calories < 0) {
+                alert("Por favor, informe calorias válidas.");
+                return;
+            }
+            if (isNaN(avgHR) || avgHR <= 0) {
+                alert("Por favor, informe a frequência cardíaca média.");
+                return;
+            }
+
+            const durationSec = durationMin * 60;
+
+            // Cria objeto treino
+            const workout = {
+                type,
+                duration: durationSec,
+                calories,
+                avgHR,
+                maxHR,
+                intensiveZone,
+                date: new Date(),
+            };
+
+            workouts.push(workout);
+            saveWorkouts();
+            updateStats();
+            updateWorkoutList();
+            clearForm();
+            toggleForm();
+            updateChart();
+        }
+
+        // Gráfico de frequência cardíaca média
+        const ctx = document.getElementById("heartRateChart").getContext("2d");
+        let heartRateChart;
+
+        function updateChart() {
+            const labels = workouts.map((w) =>
+                w.date.toLocaleDateString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                })
+            );
+            const data = workouts.map((w) => w.avgHR);
+
+            if (heartRateChart) {
+                heartRateChart.data.labels = labels;
+                heartRateChart.data.datasets[0].data = data;
+                heartRateChart.update();
+            } else {
+                heartRateChart = new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label: "FC Média",
+                                data,
+                                borderColor: "rgb(75, 192, 192)",
+                                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                                fill: true,
+                                tension: 0.3,
+                            },
+                        ],
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 200,
+                            },
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: "top",
+                            },
+                        },
+                    },
+                });
+            }
+        }
+
+        // Inicialização
+        loadWorkouts();
+        updateStats();
+        updateWorkoutList();
+        updateChart();
+    </script>
+</body>
+</html>
