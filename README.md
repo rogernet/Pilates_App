@@ -2,21 +2,15 @@
 
 ![image](https://github.com/user-attachments/assets/bb37ad67-8ba5-4405-ace5-66d06b3dbbad)
 
-📌 Funcionalidades Principais
+Funcionalidades Principais
+1) Cadastro de treinos com todos os detalhes
+2) Histórico completo organizado por data
+3) Análise detalhada de desempenho
+4) Gera 3 tipos de gráficos para diferentes métricas
+5) Salvamento automático no navegador
+6) Importar/Exportar seus dados
 
-➕ Cadastro de treinos com todos os detalhes
-
-📅 Histórico completo organizado por data
-
-🔍 Análise detalhada de desempenho
-
-📊 3 tipos de gráficos para diferentes métricas
-
-💾 Salvamento automático no navegador
-
-⚡ Importar/Exportar seus dados
-
-🛠 Tecnologias Utilizadas
+Tecnologias Utilizadas
 1) Tecnologia	Descrição
 2) HTML5:	Estrutura semântica do aplicativo
 3) CSS3: Estilos modernos com Grid/Flexbox
@@ -24,7 +18,7 @@
 5) Chart.js: Biblioteca para visualização de dados
 6) Lucide: Ícones modernos e intuitivos
 
-📱 Responsividade
+Responsividade
 - O aplicativo foi desenvolvido com foco em:
 - Telas pequenas (mobile first)
 - Tablets e desktops
