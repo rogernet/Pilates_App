@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Workout Performance Tracker</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/recharts@2.1.12/umd/Recharts.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         * {
             margin: 0;
@@ -15,7 +15,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background-color: #111827;
             min-height: 100vh;
             color: white;
             padding: 20px;
@@ -26,95 +26,114 @@
             margin: 0 auto;
         }
 
+        /* Header */
         .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 30px 0;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
         }
 
         .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            background: linear-gradient(45deg, #3B82F6, #10B981, #F59E0B);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
+        .header p {
+            color: #9CA3AF;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #3B82F6;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563EB;
+        }
+
+        .btn-secondary {
+            background-color: #374151;
+            color: white;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4B5563;
+        }
+
+        .btn-danger {
+            background-color: #EF4444;
+            color: white;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #DC2626;
+        }
+
+        /* Stats Cards */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.3s ease;
+            background-color: #1F2937;
+            padding: 20px;
+            border-radius: 12px;
         }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
         }
 
-        .stat-card i {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            color: #4ecdc4;
+        .stat-card-title {
+            color: #9CA3AF;
+            font-size: 0.875rem;
         }
 
-        .stat-card h3 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
+        .stat-card-value {
+            font-size: 1.5rem;
+            font-weight: bold;
         }
 
-        .stat-card p {
-            color: #bbb;
-            font-size: 0.9rem;
-        }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .chart-container {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .chart-container h3 {
-            margin-bottom: 20px;
-            text-align: center;
-            color: #4ecdc4;
-        }
-
-        .add-workout {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 40px;
+        /* Forms */
+        .form-container {
+            background-color: #1F2937;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
         }
 
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 16px;
+            margin-bottom: 16px;
         }
 
         .form-group {
@@ -123,333 +142,358 @@
         }
 
         .form-group label {
-            margin-bottom: 5px;
-            color: #bbb;
-            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: #9CA3AF;
+            font-size: 0.875rem;
         }
 
-        .form-group input {
-            padding: 12px;
-            border: none;
+        .form-control {
+            padding: 10px 12px;
+            background-color: #374151;
+            border: 1px solid #4B5563;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
             color: white;
             font-size: 1rem;
         }
 
-        .form-group input::placeholder {
-            color: #888;
-        }
-
-        .form-group input:focus {
+        .form-control:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.2);
+            border-color: #3B82F6;
         }
 
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            margin-right: 10px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-danger {
-            background: #ff6b6b;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #ff5252;
-        }
-
-        .workout-list {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .workout-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #4ecdc4;
-            transition: transform 0.2s ease;
-        }
-
-        .workout-item:hover {
-            transform: translateX(10px);
-        }
-
-        .workout-header {
+        .form-actions {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
+            gap: 12px;
         }
 
-        .workout-type {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #4ecdc4;
+        /* Charts */
+        .chart-container {
+            background-color: #1F2937;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
         }
 
-        .workout-date {
-            color: #bbb;
-            font-size: 0.9rem;
-        }
-
-        .workout-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .workout-stat {
-            text-align: center;
-        }
-
-        .workout-stat .value {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: white;
-        }
-
-        .workout-stat .label {
-            font-size: 0.8rem;
-            color: #bbb;
-        }
-
-        .toggle-form {
-            text-align: center;
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
             margin-bottom: 20px;
         }
 
-        .data-actions {
-            text-align: center;
-            margin: 20px 0;
+        /* Workout List */
+        .workout-list {
+            background-color: #1F2937;
+            padding: 20px;
+            border-radius: 12px;
         }
 
+        .workout-list-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #374151;
+        }
+
+        th {
+            color: #9CA3AF;
+            font-weight: 500;
+        }
+
+        /* Utility Classes */
         .hidden {
             display: none;
         }
 
-        #fileInput {
-            display: none;
+        .text-center {
+            text-align: center;
         }
 
+        /* Responsive */
         @media (max-width: 768px) {
-            .charts-grid {
-                grid-template-columns: 1fr;
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
             }
-
+            
             .form-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .header h1 {
-                font-size: 2rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <div class="header">
-            <h1><i class="fas fa-dumbbell"></i> Workout Performance Tracker </h1>
-            <p>Seu App de treino e acompanhamento de progresso</p>
-        </div>
-
-        <div class="stats-grid" id="statsGrid">
-            <div class="stat-card">
-                <i class="fas fa-running"></i>
-                <h3 id="totalWorkouts">0</h3>
-                <p>Total de Treinos</p>
+            <div>
+                <h1>Performance Tracker</h1>
+                <p>Gerencie seus treinos e acompanhe seu progresso</p>
             </div>
-            <div class="stat-card">
-                <i class="fas fa-clock"></i>
-                <h3 id="totalDuration">00:00</h3>
-                <p>Tempo Total</p>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-fire"></i>
-                <h3 id="totalCalories">0</h3>
-                <p>Calorias Totais</p>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-heartbeat"></i>
-                <h3 id="avgHeartRate">0</h3>
-                <p>FC Média (BPM)</p>
+            <div class="data-actions">
+                <button class="btn btn-primary" id="toggleFormBtn">
+                    <i data-lucide="plus"></i> Adicionar Treino
+                </button>
+                <button class="btn btn-secondary" id="exportBtn">
+                    <i data-lucide="download"></i> Exportar
+                </button>
+                <button class="btn btn-secondary" id="importBtn">
+                    <i data-lucide="upload"></i> Importar
+                </button>
+                <button class="btn btn-danger" id="clearBtn">
+                    <i data-lucide="trash-2"></i> Limpar
+                </button>
+                <input type="file" id="fileInput" class="hidden" accept=".json">
             </div>
         </div>
 
-        <div class="data-actions">
-            <button class="btn btn-primary" onclick="toggleForm()">Adicionar Novo Treino</button>
-            <button class="btn btn-secondary" onclick="exportData()">Exportar Dados</button>
-            <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">Importar Dados</button>
-            <button class="btn btn-danger" onclick="clearWorkouts()">Apagar Tudo</button>
-            <input type="file" id="fileInput" accept=".json">
-        </div>
-
-        <div class="add-workout hidden" id="addWorkoutForm">
+        <!-- Add Workout Form -->
+        <div class="form-container hidden" id="addWorkoutForm">
+            <h3 class="chart-title">Novo Treino</h3>
             <div class="form-grid">
                 <div class="form-group">
                     <label for="workoutType">Tipo de treino</label>
-                    <input
-                        type="text"
-                        id="workoutType"
-                        placeholder="Ex: Pilates, Corrida..."
-                    />
+                    <input type="text" id="workoutType" class="form-control" placeholder="Ex: Pilates, Corrida...">
                 </div>
                 <div class="form-group">
                     <label for="duration">Duração (minutos)</label>
-                    <input
-                        type="number"
-                        id="duration"
-                        placeholder="Ex: 60"
-                        min="1"
-                    />
+                    <input type="number" id="duration" class="form-control" placeholder="Ex: 60" min="1">
                 </div>
                 <div class="form-group">
-                    <label for="calories">Calorias queimadas</label>
-                    <input
-                        type="number"
-                        id="calories"
-                        placeholder="Ex: 300"
-                        min="0"
-                    />
+                    <label for="calories">Calorias</label>
+                    <input type="number" id="calories" class="form-control" placeholder="Ex: 300" min="0">
                 </div>
+            </div>
+            <div class="form-grid">
                 <div class="form-group">
                     <label for="avgHR">FC Média (BPM)</label>
-                    <input
-                        type="number"
-                        id="avgHR"
-                        placeholder="Ex: 120"
-                        min="1"
-                    />
+                    <input type="number" id="avgHR" class="form-control" placeholder="Ex: 120" min="1">
                 </div>
                 <div class="form-group">
                     <label for="maxHR">FC Máxima (BPM)</label>
-                    <input
-                        type="number"
-                        id="maxHR"
-                        placeholder="Ex: 150"
-                        min="1"
-                    />
+                    <input type="number" id="maxHR" class="form-control" placeholder="Ex: 150" min="1">
+                </div>
+            </div>
+            <h4 class="stat-card-title" style="margin: 16px 0 8px;">Zonas de Treino (minutos)</h4>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="lightZone">Zona Leve</label>
+                    <input type="number" step="0.1" id="lightZone" class="form-control" placeholder="Ex: 12.4">
                 </div>
                 <div class="form-group">
-                    <label for="intensiveZone">Zona Intensiva (%)</label>
-                    <input
-                        type="number"
-                        id="intensiveZone"
-                        placeholder="Ex: 45"
-                        min="0"
-                        max="100"
-                    />
+                    <label for="moderateZone">Zona Moderada</label>
+                    <input type="number" step="0.1" id="moderateZone" class="form-control" placeholder="Ex: 24.5">
+                </div>
+                <div class="form-group">
+                    <label for="intensiveZone">Zona Intensiva</label>
+                    <input type="number" step="0.1" id="intensiveZone" class="form-control" placeholder="Ex: 16.1">
                 </div>
             </div>
-            <div style="text-align: center;">
-                <button class="btn btn-primary" onclick="addWorkout()">Salvar Treino</button>
-                <button class="btn btn-secondary" onclick="toggleForm()">Cancelar</button>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="aerobicZone">Zona Aeróbica</label>
+                    <input type="number" step="0.1" id="aerobicZone" class="form-control" placeholder="Ex: 0.6">
+                </div>
+                <div class="form-group">
+                    <label for="anaerobicZone">Zona Anaeróbica</label>
+                    <input type="number" step="0.1" id="anaerobicZone" class="form-control" placeholder="Ex: 0">
+                </div>
+                <div class="form-group">
+                    <label for="vo2maxZone">VO2 Máx</label>
+                    <input type="number" step="0.1" id="vo2maxZone" class="form-control" placeholder="Ex: 0">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" id="saveWorkoutBtn">Salvar Treino</button>
+                <button class="btn btn-secondary" id="cancelFormBtn">Cancelar</button>
             </div>
         </div>
 
-        <div class="workout-list" id="workoutList">
-            <h2>Histórico de Treinos</h2>
-            <!-- Treinos serão inseridos aqui dinamicamente -->
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">Total de Treinos</span>
+                    <i data-lucide="activity"></i>
+                </div>
+                <div class="stat-card-value" id="totalWorkouts">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">Tempo Total</span>
+                    <i data-lucide="clock"></i>
+                </div>
+                <div class="stat-card-value" id="totalDuration">00:00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">Calorias Totais</span>
+                    <i data-lucide="flame"></i>
+                </div>
+                <div class="stat-card-value" id="totalCalories">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">FC Média</span>
+                    <i data-lucide="heart"></i>
+                </div>
+                <div class="stat-card-value" id="avgHeartRate">0</div>
+            </div>
         </div>
 
-        <div class="charts-grid">
+        <!-- Charts -->
+        <div style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 30px;">
             <div class="chart-container">
-                <h3>Desempenho da Frequência Cardíaca Média</h3>
-                <canvas id="heartRateChart"></canvas>
+                <h3 class="chart-title">Progresso dos Treinos</h3>
+                <div id="progressChart" style="width: 100%; height: 300px;"></div>
+            </div>
+            <div class="chart-container">
+                <h3 class="chart-title">Duração dos Treinos</h3>
+                <div id="durationChart" style="width: 100%; height: 300px;"></div>
+            </div>
+        </div>
+
+        <!-- Zones Chart -->
+        <div class="chart-container hidden" id="zonesContainer">
+            <h3 class="chart-title">Distribuição das Zonas - Último Treino</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div id="zonesChart" style="width: 100%; height: 300px;"></div>
+                <div id="zonesDetails"></div>
+            </div>
+        </div>
+
+        <!-- Workout List -->
+        <div class="workout-list">
+            <h3 class="workout-list-title">Histórico de Treinos</h3>
+            <div class="overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Tipo</th>
+                            <th>Duração</th>
+                            <th>Calorias</th>
+                            <th>FC Média</th>
+                            <th>FC Máx</th>
+                        </tr>
+                    </thead>
+                    <tbody id="workoutTableBody">
+                        <!-- Workouts will be inserted here dynamically -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <script>
-        // Estado inicial dos treinos
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // State
         let workouts = [];
 
-        // Função para formatar tempo em minutos:segundos
+        // DOM Elements
+        const toggleFormBtn = document.getElementById('toggleFormBtn');
+        const addWorkoutForm = document.getElementById('addWorkoutForm');
+        const saveWorkoutBtn = document.getElementById('saveWorkoutBtn');
+        const cancelFormBtn = document.getElementById('cancelFormBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const importBtn = document.getElementById('importBtn');
+        const fileInput = document.getElementById('fileInput');
+        const clearBtn = document.getElementById('clearBtn');
+        const workoutTableBody = document.getElementById('workoutTableBody');
+        const zonesContainer = document.getElementById('zonesContainer');
+
+        // Form Elements
+        const workoutTypeInput = document.getElementById('workoutType');
+        const durationInput = document.getElementById('duration');
+        const caloriesInput = document.getElementById('calories');
+        const avgHRInput = document.getElementById('avgHR');
+        const maxHRInput = document.getElementById('maxHR');
+        const lightZoneInput = document.getElementById('lightZone');
+        const moderateZoneInput = document.getElementById('moderateZone');
+        const intensiveZoneInput = document.getElementById('intensiveZone');
+        const aerobicZoneInput = document.getElementById('aerobicZone');
+        const anaerobicZoneInput = document.getElementById('anaerobicZone');
+        const vo2maxZoneInput = document.getElementById('vo2maxZone');
+
+        // Stats Elements
+        const totalWorkoutsEl = document.getElementById('totalWorkouts');
+        const totalDurationEl = document.getElementById('totalDuration');
+        const totalCaloriesEl = document.getElementById('totalCalories');
+        const avgHeartRateEl = document.getElementById('avgHeartRate');
+
+        // Charts
+        let progressChart, durationChart, zonesChart;
+
+        // Format time (seconds to mm:ss)
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
             const secs = seconds % 60;
-            return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
 
-        // Salva os treinos no localStorage
-        function saveWorkouts() {
-            localStorage.setItem("workoutData", JSON.stringify(workouts));
+        // Save workouts to localStorage
+        function saveWorkoutsToStorage() {
+            localStorage.setItem('workoutData', JSON.stringify(workouts));
         }
 
-        // Carrega os treinos do localStorage
-        function loadWorkouts() {
-            const savedData = localStorage.getItem("workoutData");
+        // Load workouts from localStorage
+        function loadWorkoutsFromStorage() {
+            const savedData = localStorage.getItem('workoutData');
             if (savedData) {
                 workouts = JSON.parse(savedData).map(w => ({
                     ...w,
-                    date: new Date(w.date) // Converte string de data de volta para objeto Date
+                    date: new Date(w.date) // Convert date string back to Date object
                 }));
+                updateUI();
             }
         }
 
-        // Limpa todos os dados
+        // Clear all workouts
         function clearWorkouts() {
-            if (confirm("Tem certeza que quer apagar todos os dados?")) {
-                localStorage.removeItem("workoutData");
+            if (confirm('Tem certeza que deseja apagar todos os dados?')) {
                 workouts = [];
-                updateStats();
-                updateWorkoutList();
-                updateChart();
+                localStorage.removeItem('workoutData');
+                updateUI();
             }
         }
 
-        // Exporta os dados como arquivo JSON
+        // Export data as JSON file
         function exportData() {
             if (workouts.length === 0) {
-                alert("Nenhum dado para exportar!");
+                alert('Nenhum dado para exportar!');
                 return;
             }
-            
+
             const dataStr = JSON.stringify(workouts, null, 2);
-            const dataBlob = new Blob([dataStr], { type: "application/json" });
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(dataBlob);
             
-            const a = document.createElement("a");
+            const a = document.createElement('a');
             a.href = url;
             a.download = `workout-data-${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         }
 
-        // Configura o listener para importação de dados
-        document.getElementById('fileInput').addEventListener('change', function(e) {
+        // Import data from JSON file
+        function importData() {
+            fileInput.click();
+        }
+
+        // Handle file input change
+        fileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
             
@@ -461,10 +505,8 @@
                         ...w,
                         date: new Date(w.date)
                     }));
-                    saveWorkouts();
-                    updateStats();
-                    updateWorkoutList();
-                    updateChart();
+                    saveWorkoutsToStorage();
+                    updateUI();
                     alert('Dados importados com sucesso!');
                 } catch (error) {
                     alert('Erro ao importar dados: Arquivo inválido!');
@@ -472,229 +514,315 @@
             };
             reader.readAsText(file);
             
-            // Limpa o input para permitir nova importação do mesmo arquivo
+            // Clear input to allow re-importing the same file
             e.target.value = '';
         });
 
-        // Atualiza as estatísticas gerais no topo
-        function updateStats() {
-            const totalWorkouts = workouts.length;
-            const totalDuration = workouts.reduce((acc, w) => acc + w.duration, 0);
-            const totalCalories = workouts.reduce((acc, w) => acc + w.calories, 0);
-            const avgHeartRate = workouts.length > 0
-                ? Math.round(workouts.reduce((acc, w) => acc + w.avgHR, 0) / workouts.length)
-                : 0;
-
-            document.getElementById("totalWorkouts").textContent = totalWorkouts;
-            document.getElementById("totalDuration").textContent = formatTime(totalDuration);
-            document.getElementById("totalCalories").textContent = totalCalories;
-            document.getElementById("avgHeartRate").textContent = avgHeartRate;
-        }
-
-        // Atualiza a lista de treinos
-        function updateWorkoutList() {
-            const list = document.getElementById("workoutList");
-            // Remove todos os itens exceto o título
-            while (list.children.length > 1) {
-                list.removeChild(list.lastChild);
-            }
-
-            if (workouts.length === 0) {
-                const emptyMsg = document.createElement("p");
-                emptyMsg.textContent = "Nenhum treino registrado ainda.";
-                emptyMsg.style.textAlign = "center";
-                emptyMsg.style.color = "#bbb";
-                list.appendChild(emptyMsg);
-                return;
-            }
-
-            workouts.forEach((w) => {
-                const workoutItem = document.createElement("div");
-                workoutItem.classList.add("workout-item");
-
-                const workoutHeader = document.createElement("div");
-                workoutHeader.classList.add("workout-header");
-
-                const workoutType = document.createElement("div");
-                workoutType.classList.add("workout-type");
-                workoutType.textContent = w.type;
-
-                const workoutDate = document.createElement("div");
-                workoutDate.classList.add("workout-date");
-                workoutDate.textContent = w.date.toLocaleDateString("pt-BR", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                });
-
-                workoutHeader.appendChild(workoutType);
-                workoutHeader.appendChild(workoutDate);
-
-                const workoutStats = document.createElement("div");
-                workoutStats.classList.add("workout-stats");
-
-                const durationStat = createStat(formatTime(w.duration), "Duração");
-                const caloriesStat = createStat(w.calories, "Calorias");
-                const avgHRStat = createStat(w.avgHR, "FC Média");
-                const intensiveZoneStat = createStat(
-                    w.intensiveZone !== null ? w.intensiveZone + "%" : "-",
-                    "Zona Intensiva"
-                );
-
-                workoutStats.appendChild(durationStat);
-                workoutStats.appendChild(caloriesStat);
-                workoutStats.appendChild(avgHRStat);
-                workoutStats.appendChild(intensiveZoneStat);
-
-                workoutItem.appendChild(workoutHeader);
-                workoutItem.appendChild(workoutStats);
-
-                list.appendChild(workoutItem);
-            });
-        }
-
-        function createStat(value, label) {
-            const stat = document.createElement("div");
-            stat.classList.add("workout-stat");
-
-            const valEl = document.createElement("div");
-            valEl.classList.add("value");
-            valEl.textContent = value;
-
-            const labelEl = document.createElement("div");
-            labelEl.classList.add("label");
-            labelEl.textContent = label;
-
-            stat.appendChild(valEl);
-            stat.appendChild(labelEl);
-            return stat;
-        }
-
-        // Controle do formulário
-        function toggleForm() {
-            const form = document.getElementById("addWorkoutForm");
-            form.classList.toggle("hidden");
-            if (!form.classList.contains("hidden")) {
-                window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-            }
-        }
-
-        // Limpa os campos do formulário
-        function clearForm() {
-            document.getElementById("workoutType").value = "";
-            document.getElementById("duration").value = "";
-            document.getElementById("calories").value = "";
-            document.getElementById("avgHR").value = "";
-            document.getElementById("maxHR").value = "";
-            document.getElementById("intensiveZone").value = "";
-        }
-
-        // Adiciona novo treino
+        // Add new workout
         function addWorkout() {
-            const type = document.getElementById("workoutType").value.trim();
-            const durationMin = parseInt(document.getElementById("duration").value);
-            const calories = parseInt(document.getElementById("calories").value);
-            const avgHR = parseInt(document.getElementById("avgHR").value);
-            const maxHR = document.getElementById("maxHR").value ? parseInt(document.getElementById("maxHR").value) : null;
-            const intensiveZone = document.getElementById("intensiveZone").value
-                ? parseFloat(document.getElementById("intensiveZone").value)
-                : null;
+            const type = workoutTypeInput.value.trim();
+            const duration = parseInt(durationInput.value);
+            const calories = parseInt(caloriesInput.value) || 0;
+            const avgHR = parseInt(avgHRInput.value) || 0;
+            const maxHR = parseInt(maxHRInput.value) || 0;
+            
+            const zones = {
+                light: parseFloat(lightZoneInput.value) || 0,
+                moderate: parseFloat(moderateZoneInput.value) || 0,
+                intensive: parseFloat(intensiveZoneInput.value) || 0,
+                aerobic: parseFloat(aerobicZoneInput.value) || 0,
+                anaerobic: parseFloat(anaerobicZoneInput.value) || 0,
+                vo2max: parseFloat(vo2maxZoneInput.value) || 0
+            };
 
-            if (!type) {
-                alert("Por favor, informe o tipo de treino.");
-                return;
-            }
-            if (isNaN(durationMin) || durationMin <= 0) {
-                alert("Por favor, informe uma duração válida.");
-                return;
-            }
-            if (isNaN(calories) || calories < 0) {
-                alert("Por favor, informe calorias válidas.");
-                return;
-            }
-            if (isNaN(avgHR) || avgHR <= 0) {
-                alert("Por favor, informe a frequência cardíaca média.");
+            if (!type || isNaN(duration) || duration <= 0) {
+                alert('Por favor, preencha pelo menos o tipo e duração do treino!');
                 return;
             }
 
-            const durationSec = durationMin * 60;
-
-            // Cria objeto treino
             const workout = {
+                id: Date.now(),
+                date: new Date().toISOString(),
                 type,
-                duration: durationSec,
+                duration: duration * 60, // Convert minutes to seconds
                 calories,
-                avgHR,
-                maxHR,
-                intensiveZone,
-                date: new Date(),
+                avgHeartRate: avgHR,
+                maxHeartRate: maxHR,
+                zones
             };
 
             workouts.push(workout);
-            saveWorkouts();
-            updateStats();
-            updateWorkoutList();
-            clearForm();
+            saveWorkoutsToStorage();
+            resetForm();
             toggleForm();
-            updateChart();
+            updateUI();
         }
 
-        // Gráfico de frequência cardíaca média
-        const ctx = document.getElementById("heartRateChart").getContext("2d");
-        let heartRateChart;
+        // Reset form
+        function resetForm() {
+            workoutTypeInput.value = '';
+            durationInput.value = '';
+            caloriesInput.value = '';
+            avgHRInput.value = '';
+            maxHRInput.value = '';
+            lightZoneInput.value = '';
+            moderateZoneInput.value = '';
+            intensiveZoneInput.value = '';
+            aerobicZoneInput.value = '';
+            anaerobicZoneInput.value = '';
+            vo2maxZoneInput.value = '';
+        }
 
-        function updateChart() {
-            const labels = workouts.map((w) =>
-                w.date.toLocaleDateString("pt-BR", {
-                    day: "2-digit",
-                    month: "2-digit",
-                })
-            );
-            const data = workouts.map((w) => w.avgHR);
+        // Toggle form visibility
+        function toggleForm() {
+            addWorkoutForm.classList.toggle('hidden');
+        }
 
-            if (heartRateChart) {
-                heartRateChart.data.labels = labels;
-                heartRateChart.data.datasets[0].data = data;
-                heartRateChart.update();
-            } else {
-                heartRateChart = new Chart(ctx, {
-                    type: "line",
-                    data: {
-                        labels,
-                        datasets: [
-                            {
-                                label: "FC Média",
-                                data,
-                                borderColor: "rgb(75, 192, 192)",
-                                backgroundColor: "rgba(75, 192, 192, 0.2)",
-                                fill: true,
-                                tension: 0.3,
-                            },
-                        ],
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                max: 200,
-                            },
-                        },
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: "top",
-                            },
-                        },
-                    },
+        // Update all UI elements
+        function updateUI() {
+            updateStats();
+            updateWorkoutTable();
+            updateCharts();
+        }
+
+        // Update stats cards
+        function updateStats() {
+            totalWorkoutsEl.textContent = workouts.length;
+            
+            const totalDuration = workouts.reduce((sum, w) => sum + w.duration, 0);
+            totalDurationEl.textContent = formatTime(totalDuration);
+            
+            const totalCalories = workouts.reduce((sum, w) => sum + w.calories, 0);
+            totalCaloriesEl.textContent = totalCalories;
+            
+            const avgHeartRate = workouts.length > 0 
+                ? Math.round(workouts.reduce((sum, w) => sum + w.avgHeartRate, 0) / workouts.length)
+                : 0;
+            avgHeartRateEl.textContent = avgHeartRate;
+        }
+
+        // Update workout table
+        function updateWorkoutTable() {
+            workoutTableBody.innerHTML = '';
+            
+            if (workouts.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="6" class="text-center" style="padding: 20px; color: #9CA3AF;">
+                        Nenhum treino registrado ainda.
+                    </td>
+                `;
+                workoutTableBody.appendChild(row);
+                return;
+            }
+            
+            // Sort workouts by date (newest first)
+            const sortedWorkouts = [...workouts].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedWorkouts.forEach(workout => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(workout.date).toLocaleDateString('pt-BR')}</td>
+                    <td>${workout.type}</td>
+                    <td>${formatTime(workout.duration)}</td>
+                    <td>${workout.calories} kcal</td>
+                    <td>${workout.avgHeartRate} BPM</td>
+                    <td>${workout.maxHeartRate} BPM</td>
+                `;
+                workoutTableBody.appendChild(row);
+            });
+        }
+
+        // Update charts
+        function updateCharts() {
+            updateProgressChart();
+            updateDurationChart();
+            updateZonesChart();
+        }
+
+        // Update progress chart
+        function updateProgressChart() {
+            const chartData = workouts.map((w, i) => ({
+                name: `Treino ${i + 1}`,
+                date: new Date(w.date).toLocaleDateString('pt-BR'),
+                calories: w.calories,
+                avgHR: w.avgHeartRate
+            }));
+            
+            if (progressChart) {
+                progressChart.update({
+                    series: [
+                        { data: chartData.map(d => d.calories) },
+                        { data: chartData.map(d => d.avgHR) }
+                    ],
+                    xAxis: { data: chartData.map(d => d.name) }
                 });
+            } else {
+                progressChart = new Recharts.LineChart({
+                    container: document.getElementById('progressChart'),
+                    width: '100%',
+                    height: 300,
+                    data: chartData,
+                    margin: { top: 20, right: 30, left: 20, bottom: 20 }
+                });
+                
+                progressChart.add(new Recharts.CartesianGrid({ strokeDasharray: '3 3', stroke: '#374151' }));
+                progressChart.add(new Recharts.XAxis({ dataKey: 'name', stroke: '#9CA3AF' }));
+                progressChart.add(new Recharts.YAxis({ stroke: '#9CA3AF' }));
+                progressChart.add(new Recharts.Tooltip({
+                    contentStyle: { 
+                        backgroundColor: '#1F2937',
+                        border: 'none',
+                        borderRadius: '8px',
+                        color: '#fff'
+                    }
+                }));
+                progressChart.add(new Recharts.Legend());
+                progressChart.add(new Recharts.Line({ 
+                    dataKey: 'calories',
+                    stroke: '#F59E0B',
+                    strokeWidth: 2,
+                    name: 'Calorias'
+                }));
+                progressChart.add(new Recharts.Line({ 
+                    dataKey: 'avgHR',
+                    stroke: '#EF4444',
+                    strokeWidth: 2,
+                    name: 'FC Média'
+                }));
             }
         }
 
-        // Inicialização
-        loadWorkouts();
-        updateStats();
-        updateWorkoutList();
-        updateChart();
+        // Update duration chart
+        function updateDurationChart() {
+            const chartData = workouts.map((w, i) => ({
+                name: `Treino ${i + 1}`,
+                date: new Date(w.date).toLocaleDateString('pt-BR'),
+                duration: Math.round(w.duration / 60) // Convert to minutes
+            }));
+            
+            if (durationChart) {
+                durationChart.update({
+                    series: [{ data: chartData.map(d => d.duration) }],
+                    xAxis: { data: chartData.map(d => d.name) }
+                });
+            } else {
+                durationChart = new Recharts.BarChart({
+                    container: document.getElementById('durationChart'),
+                    width: '100%',
+                    height: 300,
+                    data: chartData,
+                    margin: { top: 20, right: 30, left: 20, bottom: 20 }
+                });
+                
+                durationChart.add(new Recharts.CartesianGrid({ strokeDasharray: '3 3', stroke: '#374151' }));
+                durationChart.add(new Recharts.XAxis({ dataKey: 'name', stroke: '#9CA3AF' }));
+                durationChart.add(new Recharts.YAxis({ stroke: '#9CA3AF' }));
+                durationChart.add(new Recharts.Tooltip({
+                    contentStyle: { 
+                        backgroundColor: '#1F2937',
+                        border: 'none',
+                        borderRadius: '8px',
+                        color: '#fff'
+                    }
+                }));
+                durationChart.add(new Recharts.Bar({ 
+                    dataKey: 'duration',
+                    fill: '#3B82F6',
+                    name: 'Duração (min)'
+                }));
+            }
+        }
+
+        // Update zones chart
+        function updateZonesChart() {
+            if (workouts.length === 0) {
+                zonesContainer.classList.add('hidden');
+                return;
+            }
+            
+            const lastWorkout = workouts[workouts.length - 1];
+            const zoneData = [
+                { name: 'Leve', value: lastWorkout.zones.light, color: '#3B82F6' },
+                { name: 'Moderado', value: lastWorkout.zones.moderate, color: '#10B981' },
+                { name: 'Intensivo', value: lastWorkout.zones.intensive, color: '#F59E0B' },
+                { name: 'Aeróbico', value: lastWorkout.zones.aerobic, color: '#EF4444' },
+                { name: 'Anaeróbico', value: lastWorkout.zones.anaerobic, color: '#8B5CF6' },
+                { name: 'VO2 Máx', value: lastWorkout.zones.vo2max, color: '#EC4899' }
+            ].filter(zone => zone.value > 0);
+            
+            if (zoneData.length === 0) {
+                zonesContainer.classList.add('hidden');
+                return;
+            }
+            
+            zonesContainer.classList.remove('hidden');
+            
+            // Update pie chart
+            if (zonesChart) {
+                zonesChart.update({
+                    series: [{ data: zoneData }]
+                });
+            } else {
+                zonesChart = new Recharts.PieChart({
+                    container: document.getElementById('zonesChart'),
+                    width: '100%',
+                    height: 300,
+                    margin: { top: 20, right: 20, left: 20, bottom: 20 }
+                });
+                
+                zonesChart.add(new Recharts.Pie({
+                    data: zoneData,
+                    dataKey: 'value',
+                    nameKey: 'name',
+                    cx: '50%',
+                    cy: '50%',
+                    outerRadius: 80,
+                    label: ({ name, value }) => `${name}: ${value}min`
+                }));
+                
+                zonesChart.add(new Recharts.Tooltip({
+                    contentStyle: { 
+                        backgroundColor: '#1F2937',
+                        border: 'none',
+                        borderRadius: '8px',
+                        color: '#fff'
+                    }
+                }));
+            }
+            
+            // Update zones details
+            const zonesDetails = document.getElementById('zonesDetails');
+            zonesDetails.innerHTML = `
+                <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 16px;">Detalhes das Zonas</h4>
+                <div style="display: grid; gap: 8px;">
+                    ${zoneData.map(zone => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; 
+                            padding: 12px; background-color: #374151; border-radius: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background-color: ${zone.color};"></div>
+                                <span>${zone.name}</span>
+                            </div>
+                            <span style="font-weight: 500;">${zone.value} min</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Event Listeners
+        toggleFormBtn.addEventListener('click', toggleForm);
+        saveWorkoutBtn.addEventListener('click', addWorkout);
+        cancelFormBtn.addEventListener('click', () => {
+            resetForm();
+            toggleForm();
+        });
+        exportBtn.addEventListener('click', exportData);
+        importBtn.addEventListener('click', importData);
+        clearBtn.addEventListener('click', clearWorkouts);
+
+        // Initialize
+        loadWorkoutsFromStorage();
     </script>
 </body>
 </html>
