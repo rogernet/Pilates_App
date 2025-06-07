@@ -3,11 +3,17 @@
 ![image](https://github.com/user-attachments/assets/bb37ad67-8ba5-4405-ace5-66d06b3dbbad)
 
 📌 Funcionalidades Principais
+
 ➕ Cadastro de treinos com todos os detalhes
+
 📅 Histórico completo organizado por data
+
 🔍 Análise detalhada de desempenho
+
 📊 3 tipos de gráficos para diferentes métricas
+
 💾 Salvamento automático no navegador
+
 ⚡ Importar/Exportar seus dados
 
 🛠 Tecnologias Utilizadas
