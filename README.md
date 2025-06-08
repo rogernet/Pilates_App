@@ -1,4 +1,4 @@
-# Performance Tracker App .:. Seu aplicativo de treino e acompanhamento de progresso
+# Performance Tracker App .:. Aplicativo de treino e acompanhamento de progresso
 
 ![image](https://github.com/user-attachments/assets/bb37ad67-8ba5-4405-ace5-66d06b3dbbad)
 
