@@ -10,8 +10,7 @@ Funcionalidades Principais
 5) Salvamento automático no navegador
 6) Importar/Exportar seus dados
 
-Tecnologias Utilizadas
-1) Tecnologia	Descrição
+Tecnologias Utilizadas (Tecnologia e Descrição)
 2) HTML5:	Estrutura semântica do aplicativo
 3) CSS3: Estilos modernos com Grid/Flexbox
 4) JavaScript: Lógica e interatividade
