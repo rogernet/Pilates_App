@@ -11,13 +11,15 @@ Funcionalidades Principais
 6) Importar/Exportar seus dados
 
 Tecnologias Utilizadas (Tecnologia e Descrição)
-2) HTML5:	Estrutura semântica do aplicativo
-3) CSS3: Estilos modernos com Grid/Flexbox
-4) JavaScript: Lógica e interatividade
-5) Chart.js: Biblioteca para visualização de dados
-6) Lucide: Ícones modernos e intuitivos
+
+1) HTML5:	Estrutura semântica do aplicativo
+2) CSS3: Estilos modernos com Grid/Flexbox
+3) JavaScript: Lógica e interatividade
+4) Chart.js: Biblioteca para visualização de dados
+5) Lucide: Ícones modernos e intuitivos
 
 Responsividade
+
 - O aplicativo foi desenvolvido com foco em:
 - Telas pequenas (mobile first)
 - Tablets e desktops
