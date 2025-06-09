@@ -230,6 +230,31 @@
             text-align: center;
         }
 
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            background-color: #374151;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .page-btn.active {
+            background-color: #3B82F6;
+        }
+
+        .page-btn:hover:not(.active) {
+            background-color: #4B5563;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header {
@@ -335,6 +360,69 @@
             </div>
         </div>
 
+        <!-- Edit Workout Form -->
+        <div class="form-container hidden" id="editWorkoutForm">
+            <h3 class="chart-title">Editar Treino</h3>
+            <input type="hidden" id="editWorkoutId">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="editWorkoutType">Tipo de treino</label>
+                    <input type="text" id="editWorkoutType" class="form-control" placeholder="Ex: Pilates, Corrida...">
+                </div>
+                <div class="form-group">
+                    <label for="editDuration">Duração (minutos)</label>
+                    <input type="number" id="editDuration" class="form-control" placeholder="Ex: 60" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="editCalories">Calorias</label>
+                    <input type="number" id="editCalories" class="form-control" placeholder="Ex: 300" min="0">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="editAvgHR">FC Média (BPM)</label>
+                    <input type="number" id="editAvgHR" class="form-control" placeholder="Ex: 120" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="editMaxHR">FC Máxima (BPM)</label>
+                    <input type="number" id="editMaxHR" class="form-control" placeholder="Ex: 150" min="1">
+                </div>
+            </div>
+            <h4 class="stat-card-title" style="margin: 16px 0 8px;">Zonas de Treino (minutos)</h4>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="editLightZone">Zona Leve</label>
+                    <input type="number" step="0.1" id="editLightZone" class="form-control" placeholder="Ex: 12.4" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="editModerateZone">Zona Moderada</label>
+                    <input type="number" step="0.1" id="editModerateZone" class="form-control" placeholder="Ex: 24.5" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="editIntensiveZone">Zona Intensiva</label>
+                    <input type="number" step="0.1" id="editIntensiveZone" class="form-control" placeholder="Ex: 16.1" min="0">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="editAerobicZone">Zona Aeróbica</label>
+                    <input type="number" step="0.1" id="editAerobicZone" class="form-control" placeholder="Ex: 0.6" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="editAnaerobicZone">Zona Anaeróbica</label>
+                    <input type="number" step="0.1" id="editAnaerobicZone" class="form-control" placeholder="Ex: 0" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="editVo2maxZone">VO2 Máx</label>
+                    <input type="number" step="0.1" id="editVo2maxZone" class="form-control" placeholder="Ex: 0" min="0">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" id="updateWorkoutBtn">Atualizar Treino</button>
+                <button class="btn btn-secondary" id="cancelEditBtn">Cancelar</button>
+            </div>
+        </div>
+
         <!-- Stats Cards -->
         <div class="stats-grid">
             <div class="stat-card">
@@ -414,6 +502,9 @@
                     </tbody>
                 </table>
             </div>
+            <div class="pagination" id="pagination">
+                <!-- Pagination buttons will be inserted here dynamically -->
+            </div>
         </div>
     </div>
 
@@ -424,6 +515,8 @@
         // State
         let workouts = [];
         let progressChart, durationChart, zonesChart;
+        let currentPage = 1;
+        const itemsPerPage = 10;
 
         // DOM Elements
         const toggleFormBtn = document.getElementById('toggleFormBtn');
@@ -436,6 +529,24 @@
         const clearBtn = document.getElementById('clearBtn');
         const workoutTableBody = document.getElementById('workoutTableBody');
         const zonesContainer = document.getElementById('zonesContainer');
+        const paginationEl = document.getElementById('pagination');
+
+        // Edit Form Elements
+        const editWorkoutForm = document.getElementById('editWorkoutForm');
+        const editWorkoutId = document.getElementById('editWorkoutId');
+        const editWorkoutTypeInput = document.getElementById('editWorkoutType');
+        const editDurationInput = document.getElementById('editDuration');
+        const editCaloriesInput = document.getElementById('editCalories');
+        const editAvgHRInput = document.getElementById('editAvgHR');
+        const editMaxHRInput = document.getElementById('editMaxHR');
+        const editLightZoneInput = document.getElementById('editLightZone');
+        const editModerateZoneInput = document.getElementById('editModerateZone');
+        const editIntensiveZoneInput = document.getElementById('editIntensiveZone');
+        const editAerobicZoneInput = document.getElementById('editAerobicZone');
+        const editAnaerobicZoneInput = document.getElementById('editAnaerobicZone');
+        const editVo2maxZoneInput = document.getElementById('editVo2maxZone');
+        const updateWorkoutBtn = document.getElementById('updateWorkoutBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
 
         // Form Elements
         const workoutTypeInput = document.getElementById('workoutType');
@@ -510,6 +621,89 @@
                 
                 updateUI();
             }
+        }
+
+        // Edit a single workout
+        function editWorkout(id) {
+            const workout = workouts.find(w => w.id === id);
+            if (!workout) return;
+
+            // Preenche o formulário de edição com os dados do treino
+            editWorkoutId.value = workout.id;
+            editWorkoutTypeInput.value = workout.type;
+            editDurationInput.value = Math.round(workout.duration / 60); // Convertendo para minutos
+            editCaloriesInput.value = workout.calories;
+            editAvgHRInput.value = workout.avgHeartRate;
+            editMaxHRInput.value = workout.maxHeartRate;
+            editLightZoneInput.value = workout.zones.light;
+            editModerateZoneInput.value = workout.zones.moderate;
+            editIntensiveZoneInput.value = workout.zones.intensive;
+            editAerobicZoneInput.value = workout.zones.aerobic;
+            editAnaerobicZoneInput.value = workout.zones.anaerobic;
+            editVo2maxZoneInput.value = workout.zones.vo2max;
+
+            // Mostra o formulário de edição e esconde o de adição
+            addWorkoutForm.classList.add('hidden');
+            editWorkoutForm.classList.remove('hidden');
+        }
+
+        // Update a workout
+        function updateWorkout() {
+            const id = parseInt(editWorkoutId.value);
+            const workoutIndex = workouts.findIndex(w => w.id === id);
+            
+            if (workoutIndex === -1) return;
+
+            // Atualiza os dados do treino sem validação
+            workouts[workoutIndex] = {
+                id: id,
+                date: workouts[workoutIndex].date, // Mantém a data original
+                type: editWorkoutTypeInput.value.trim(),
+                duration: parseInt(editDurationInput.value) * 60, // Convertendo para segundos
+                calories: parseInt(editCaloriesInput.value) || 0,
+                avgHeartRate: parseInt(editAvgHRInput.value) || 0,
+                maxHeartRate: parseInt(editMaxHRInput.value) || 0,
+                zones: {
+                    light: parseFloat(editLightZoneInput.value) || 0,
+                    moderate: parseFloat(editModerateZoneInput.value) || 0,
+                    intensive: parseFloat(editIntensiveZoneInput.value) || 0,
+                    aerobic: parseFloat(editAerobicZoneInput.value) || 0,
+                    anaerobic: parseFloat(editAnaerobicZoneInput.value) || 0,
+                    vo2max: parseFloat(editVo2maxZoneInput.value) || 0
+                }
+            };
+
+            saveWorkoutsToStorage();
+            cancelEdit();
+            
+            // Destroy charts before updating
+            if (progressChart) progressChart.destroy();
+            if (durationChart) durationChart.destroy();
+            if (zonesChart) zonesChart.destroy();
+            
+            updateUI();
+        }
+
+        // Cancel edit
+        function cancelEdit() {
+            editWorkoutForm.classList.add('hidden');
+            resetEditForm();
+        }
+
+        // Reset edit form
+        function resetEditForm() {
+            editWorkoutId.value = '';
+            editWorkoutTypeInput.value = '';
+            editDurationInput.value = '';
+            editCaloriesInput.value = '';
+            editAvgHRInput.value = '';
+            editMaxHRInput.value = '';
+            editLightZoneInput.value = '';
+            editModerateZoneInput.value = '';
+            editIntensiveZoneInput.value = '';
+            editAerobicZoneInput.value = '';
+            editAnaerobicZoneInput.value = '';
+            editVo2maxZoneInput.value = '';
         }
 
         // Export data as JSON file
@@ -642,6 +836,7 @@
             updateStats();
             updateWorkoutTable();
             updateCharts();
+            updatePagination();
         }
 
         // Update stats cards
@@ -662,7 +857,7 @@
             avgHeartRateEl.textContent = avgHeartRate;
         }
 
-        // Update workout table
+        // Update workout table with pagination
         function updateWorkoutTable() {
             workoutTableBody.innerHTML = '';
             
@@ -680,7 +875,12 @@
             // Sort workouts by date (newest first)
             const sortedWorkouts = [...workouts].sort((a, b) => new Date(b.date) - new Date(a.date));
             
-            sortedWorkouts.forEach(workout => {
+            // Pagination logic
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedWorkouts = sortedWorkouts.slice(startIndex, endIndex);
+            
+            paginatedWorkouts.forEach(workout => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${new Date(workout.date).toLocaleDateString('pt-BR')}</td>
@@ -690,6 +890,9 @@
                     <td>${workout.avgHeartRate} BPM</td>
                     <td>${workout.maxHeartRate} BPM</td>
                     <td>
+                        <button class="btn btn-secondary btn-sm" onclick="editWorkout(${workout.id})">
+                            <i data-lucide="edit"></i>
+                        </button>
                         <button class="btn btn-danger btn-sm" onclick="deleteWorkout(${workout.id})">
                             <i data-lucide="trash-2"></i>
                         </button>
@@ -699,6 +902,59 @@
             });
             
             // Refresh icons in the table
+            lucide.createIcons();
+        }
+
+        // Update pagination buttons
+        function updatePagination() {
+            paginationEl.innerHTML = '';
+            
+            if (workouts.length <= itemsPerPage) return;
+            
+            const totalPages = Math.ceil(workouts.length / itemsPerPage);
+            
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'page-btn';
+            prevBtn.innerHTML = '<i data-lucide="chevron-left"></i>';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updateWorkoutTable();
+                    updatePagination();
+                }
+            });
+            paginationEl.appendChild(prevBtn);
+            
+            // Page buttons
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    updateWorkoutTable();
+                    updatePagination();
+                });
+                paginationEl.appendChild(pageBtn);
+            }
+            
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'page-btn';
+            nextBtn.innerHTML = '<i data-lucide="chevron-right"></i>';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updateWorkoutTable();
+                    updatePagination();
+                }
+            });
+            paginationEl.appendChild(nextBtn);
+            
+            // Refresh icons
             lucide.createIcons();
         }
 
@@ -944,6 +1200,8 @@
         exportBtn.addEventListener('click', exportData);
         importBtn.addEventListener('click', importData);
         clearBtn.addEventListener('click', clearWorkouts);
+        updateWorkoutBtn.addEventListener('click', updateWorkout);
+        cancelEditBtn.addEventListener('click', cancelEdit);
 
         // Initialize
         loadWorkoutsFromStorage();
